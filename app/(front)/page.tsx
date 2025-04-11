@@ -1,29 +1,89 @@
-"use client";
+'use client';
 
-import Item from "@/components/event/item";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import EventI from "@/types/event";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-export default function Front() {
-  const [events, setEvents] = useState([]);
-  const getEvents = async () => {
-    const res = await axios.get("/api/dashboard/get-events");
+type Event = {
+  _id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  image?: string;
+  city: string;
+};
 
-    console.log(res.data.events);
+const cities = [
+  'Wszystkie',
+  'Warszawa',
+  'Kraków',
+  'Wrocław',
+  'Poznań',
+  'Gdańsk',
+  'Łódź',
+  'Katowice',
+  'Szczecin',
+  'Lublin',
+  'Białystok',
+];
 
-    setEvents(res.data.events);
-  };
+export default function HomePage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [filteredCity, setFilteredCity] = useState('Wszystkie');
 
   useEffect(() => {
-    getEvents();
-  }, []);
+    const fetchEvents = async () => {
+      try {
+        const res = await axios.get('/api/events');
+        const data: Event[] = res.data;
+
+        if (filteredCity === 'Wszystkie') {
+          setEvents(data);
+        } else {
+          const filtered = data.filter((event) => event.city === filteredCity);
+          setEvents(filtered);
+        }
+      } catch (error) {
+        console.error('Błąd pobierania eventów:', error);
+      }
+    };
+
+    fetchEvents();
+  }, [filteredCity]);
 
   return (
-    <div className="mt-2">
-      {events.map((event: EventI) => (
-        <Item key={event._id} event={event} />
-      ))}
+    <div className="p-4 max-w-4xl mx-auto">
+      <div className="mb-4">
+        <label htmlFor="city" className="block mb-1 font-semibold">
+          Filtruj po mieście:
+        </label>
+        <select
+          id="city"
+          className="border px-3 py-2 rounded w-full"
+          value={filteredCity}
+          onChange={(e) => setFilteredCity(e.target.value)}
+        >
+          {cities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {events.length === 0 ? (
+        <p>Brak eventów w tym mieście.</p>
+      ) : (
+        <ul className="space-y-4">
+          {events.map((event) => (
+            <li key={event._id} className="border p-4 rounded shadow">
+              <h2 className="text-xl font-bold">{event.title}</h2>
+              <p className="text-sm text-gray-600 mb-2">{event.city} – {new Date(event.date).toLocaleDateString()}</p>
+              <p>{event.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

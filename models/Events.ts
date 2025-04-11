@@ -1,26 +1,53 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, models } from 'mongoose';
 
-const EventSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+const EventSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: false,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    city: {
+      type: String,
+      enum: [
+        'Warszawa',
+        'Kraków',
+        'Wrocław',
+        'Poznań',
+        'Gdańsk',
+        'Łódź',
+        'Katowice',
+        'Szczecin',
+        'Lublin',
+        'Białystok',
+      ],
+      required: true,
+    },
   },
-  desc: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: String,
-    required: true,
-  },
-  url: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-});
+  { timestamps: true }
+);
 
-export default mongoose.models.Events || mongoose.model("Events", EventSchema);
+export default models.Event || mongoose.model('Event', EventSchema);
