@@ -8,9 +8,9 @@ export default function Header(props: SessionI) {
   const { user } = props;
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between bg-[var(--headerBg)] pt-[10px] pb-[10px] shadow-[0px_0px_34px_6px_rgba(255,46,88,0.6)] rounded">
       <Link href={"/"} className="p-2">
-        <h1 className="text-2xl font-bold text-[#b32e2e]">Events App</h1>
+        <h1 className="text-2xl font-bold text-[#b32e2e] ">Events App</h1>
       </Link>
       <div className="flex">
         <Link href={"/dashboard"} className="p-2">
